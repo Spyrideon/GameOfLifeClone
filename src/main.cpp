@@ -38,7 +38,6 @@ int main() {
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
-        // ESC to close
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
