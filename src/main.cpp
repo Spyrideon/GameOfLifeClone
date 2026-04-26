@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include "Shader.h"
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
@@ -18,7 +20,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create window
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Window", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(50, 50, "OpenGL Window", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
@@ -33,6 +35,8 @@ int main() {
         return -1;
     }
 
+    Shader shader("/shader/vertex.shader", "/shader/fragment.shader");
+
     std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
     std::cout << "GPU: "            << glGetString(GL_RENDERER) << "\n";
 
@@ -43,6 +47,8 @@ int main() {
 
         glClearColor(0.1f, 0.15f, 0.2f, 1.0f);   // dark blue-grey
         glClear(GL_COLOR_BUFFER_BIT);
+
+        shader.use();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
