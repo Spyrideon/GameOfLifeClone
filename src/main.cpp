@@ -4,41 +4,26 @@
 
 #include "Shader.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
-}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+GLFWwindow* init();
+
 
 int main() {
-    // Init GLFW
-    if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW\n";
-        return -1;
-    }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    GLFWwindow* window = init();
+    if (!window) return -1;
 
-    // Create window
-    GLFWwindow* window = glfwCreateWindow(50, 50, "OpenGL Window", nullptr, nullptr);
-    if (!window) {
-        std::cerr << "Failed to create GLFW window\n";
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    // Init glad
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "Failed to initialize glad\n";
-        return -1;
-    }
-
-    Shader shader("/shader/vertex.shader", "/shader/fragment.shader");
-
-    std::cout << "OpenGL version: " << glGetString(GL_VERSION) << "\n";
-    std::cout << "GPU: "            << glGetString(GL_RENDERER) << "\n";
+    Shader shader("../src/shader/vertex.shader", "../src/shader/fragment.shader");
+    float vertices[] = {
+        -1.0f, 1.0f, 0.0f,
+        1.0f, 1.0f, 0.0f,
+        1.0f, -1.0f, 0.0f,
+        -1.0f, -1.0f, 0.0
+    };
+    unsigned int VBO; glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -56,4 +41,37 @@ int main() {
 
     glfwTerminate();
     return 0;
+}
+
+GLFWwindow* init() {
+    // Init GLFW
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW\n";
+        return nullptr;
+    }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // Create window
+    GLFWwindow* window = glfwCreateWindow(50, 50, "OpenGL Window", nullptr, nullptr);
+    if (!window) {
+        std::cerr << "Failed to create GLFW window\n";
+        glfwTerminate();
+        return nullptr;
+    }
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // Init glad
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize glad\n";
+        glfwTerminate();
+        return nullptr;
+    }
+    return window;
+}
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
 }
