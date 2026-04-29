@@ -16,15 +16,16 @@ int main() {
 
     Shader shader("../src/shader/vertex.shader", "../src/shader/fragment.shader");
     float vertices[] = {
-        -1.0f, 1.0f, 0.0f,
-        1.0f, 1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        -1.0f, -1.0f, 0.0
+        -1.0f, 1.0f,
+        1.0f, 1.0f,
+        1.0f, -1.0f,
+        -1.0f, -1.0f
     };
     unsigned int VBO; glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), static_cast<void *>(nullptr));
+    glEnableVertexAttribArray(0);
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
