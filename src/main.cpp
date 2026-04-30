@@ -1,14 +1,15 @@
 #include <glad/glad.h>      // MUST be before glfw
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <vector>
 
 #include "Shader.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 GLFWwindow* init();
-constexpr int WINDOW_WIDTH = 100;
-constexpr int WINDOW_HEIGHT = 100;
+constexpr int WINDOW_WIDTH = 150;
+constexpr int WINDOW_HEIGHT = 150;
 
 int main() {
 
@@ -17,14 +18,32 @@ int main() {
 
     Shader shader("../src/shader/vertex.shader", "../src/shader/fragment.shader");
     float vertices[] = {
-        -1.0f, 1.0f,
-        1.0f, 1.0f,
-        1.0f, -1.0f,
-        -1.0f, -1.0f
-    };
+        1.0f, 1.0f,         1.0f, 0.0f,
+        -1.0f, 1.0f,        0.0f, 0.0f,
+        -1.0f, -1.0f,       0.0f, 1.0f,
+        1.0f, -1.0f,        1.0f, 1.0f
+    };  //vertex points     //texture coords
     unsigned int indices[] = {
         0, 1, 2,
         0, 3, 2
+    };//draw order
+
+    std::vector<uint8_t> cells = {
+        1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
     };
     unsigned int VBO, VAO, EBO;
     glGenBuffers(1, &VBO); glGenVertexArrays(1, &VAO); glGenBuffers(1, &EBO);
@@ -34,12 +53,35 @@ int main() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), static_cast<void *>(nullptr));
+    //position attr
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    //texture coord attr
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0); // good practice
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // for clarity of drawing process
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    // generate texture from cell vector
+    glTexImage2D(GL_TEXTURE_2D,
+        0,
+        GL_R8,
+        WINDOW_WIDTH / 10, WINDOW_HEIGHT / 10,
+        0,
+        GL_RED,
+        GL_UNSIGNED_BYTE,
+        cells.data());
+
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // for clarity of drawing process
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -47,6 +89,9 @@ int main() {
 
         glClearColor(0.1f, 0.15f, 0.2f, 1.0f);   // dark blue-grey
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
 
         shader.use();
         glBindVertexArray(VAO);
