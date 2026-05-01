@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(glad STATIC external/glad/src/glad.c)
 target_include_directories(glad PUBLIC external/glad/include)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp
+        src/Shader.cpp
+        src/Shader.h)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         external/GLFW/include
