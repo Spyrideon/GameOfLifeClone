@@ -10,6 +10,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 GLFWwindow* init();
 constexpr int WINDOW_WIDTH = 150;
 constexpr int WINDOW_HEIGHT = 150;
+// for now grid width/height is a 10th of window width/height
+constexpr int GRID_WIDTH = 15;
+constexpr int GRID_HEIGHT = 15;
 
 int main() {
 
@@ -59,7 +62,6 @@ int main() {
     //texture coord attr
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0); // good practice
 
     unsigned int texture;
@@ -75,7 +77,7 @@ int main() {
     glTexImage2D(GL_TEXTURE_2D,
         0,
         GL_R8,
-        WINDOW_WIDTH / 10, WINDOW_HEIGHT / 10,
+        GRID_WIDTH, GRID_HEIGHT,
         0,
         GL_RED,
         GL_UNSIGNED_BYTE,
@@ -100,6 +102,11 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteTextures(1, &texture);
 
     glfwTerminate();
     return 0;
