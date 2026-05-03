@@ -3,11 +3,13 @@
 #include <iostream>
 #include <vector>
 
+#include "CellGrid.h"
 #include "Shader.h"
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 GLFWwindow* init();
+
 constexpr int WINDOW_WIDTH = 150;
 constexpr int WINDOW_HEIGHT = 150;
 // for now grid width/height is a 10th of window width/height
@@ -83,17 +85,20 @@ int main() {
         GL_UNSIGNED_BYTE,
         cells.data());
 
+    CellGrid cellGrid(15, 15);
+
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // for clarity of drawing process
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
-        glClearColor(0.1f, 0.15f, 0.2f, 1.0f);   // dark blue-grey
+        glClearColor(0.1f, 0.15f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, texture);
+        cellGrid.update();
 
         shader.use();
         glBindVertexArray(VAO);
