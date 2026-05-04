@@ -8,7 +8,9 @@ target_include_directories(glad PUBLIC external/glad/include)
 
 add_executable(${PROJECT_NAME} src/main.cpp
         src/Shader.cpp
-        src/Shader.h)
+        src/Shader.h
+        src/CellGrid.h
+        src/CellGrid.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         external/GLFW/include
