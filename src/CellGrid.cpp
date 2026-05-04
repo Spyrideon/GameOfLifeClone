@@ -4,6 +4,10 @@ CellGrid::CellGrid(const int width,const int height)
     : width(width), height(height), cells(width * height, 0){
     initTexture();
 }
+CellGrid::~CellGrid(){
+    glDeleteTextures(1, &texture);    // good practice, not needed
+}
+
 
 void CellGrid::update() {
     if (cells[0] == 0) {

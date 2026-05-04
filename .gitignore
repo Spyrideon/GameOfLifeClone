@@ -2,3 +2,5 @@
 cmake-build-debug/
 dev.cmd
 dev_cmd/
+.clang-format
+.clang-tidy

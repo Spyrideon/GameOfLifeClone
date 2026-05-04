@@ -14,6 +14,7 @@ private:
 
 public:
     CellGrid(int width, int height);
+    ~CellGrid();
 
     // update the cells array on call
     void update();
