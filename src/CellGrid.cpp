@@ -2,7 +2,15 @@
 
 CellGrid::CellGrid(const int width,const int height)
     : width(width), height(height), cells(width * height, 0){
+
     initTexture();
+
+    std::mt19937 rng(std::random_device{}());
+    std::bernoulli_distribution dist(0.421);
+
+    for (auto& cell : cells) {
+        cell = dist(rng) ? 1 : 0;
+    }
 }
 CellGrid::~CellGrid(){
     glDeleteTextures(1, &texture);    // good practice, not needed
@@ -10,13 +18,7 @@ CellGrid::~CellGrid(){
 
 
 void CellGrid::update() {
-    if (cells[0] == 0) {
-        cells = std::vector<uint8_t>(width * height, 1);
-    }
-    else {
-        cells = std::vector<uint8_t>(width * height, 0);
-    }
-    uploadTexToGPU();
+
 }
 
 void CellGrid::uploadTexToGPU() {
@@ -55,6 +57,6 @@ void CellGrid::initTexture() {
         GL_UNSIGNED_BYTE,
         cells.data());
 
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 }

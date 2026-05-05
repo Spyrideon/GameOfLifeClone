@@ -10,11 +10,11 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 GLFWwindow* init();
 
-constexpr int WINDOW_WIDTH = 150;
-constexpr int WINDOW_HEIGHT = 150;
+constexpr int WINDOW_WIDTH = 1500;
+constexpr int WINDOW_HEIGHT = 1500;
 // for now grid width/height is a 10th of window width/height
-constexpr int GRID_WIDTH = 15;
-constexpr int GRID_HEIGHT = 15;
+constexpr int GRID_WIDTH = 150;
+constexpr int GRID_HEIGHT = 150;
 
 int main() {
 
@@ -49,7 +49,7 @@ int main() {
     glEnableVertexAttribArray(1);
     glBindVertexArray(0); // good practice
 
-    CellGrid cell_grid(15, 15);
+    CellGrid cell_grid(GRID_WIDTH, GRID_HEIGHT);
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -60,6 +60,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         cell_grid.update();
+        cell_grid.uploadTexToGPU();
 
         shader.use();
         glBindVertexArray(VAO);
