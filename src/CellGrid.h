@@ -1,6 +1,7 @@
 #ifndef GAMEOFLIFECLONE_CELLGRID_H
 #define GAMEOFLIFECLONE_CELLGRID_H
 #include <vector>
+#include <random>
 #include <glad/glad.h>
 
 
