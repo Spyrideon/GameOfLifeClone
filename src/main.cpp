@@ -51,6 +51,9 @@ int main() {
 
     CellGrid cell_grid(GRID_WIDTH, GRID_HEIGHT);
 
+    double lastUpdateTime = glfwGetTime();
+    const double updateInterval = 1.0 / 10.0;
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -59,7 +62,14 @@ int main() {
         glClearColor(0.1f, 0.15f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        cell_grid.update();
+        double currentTime = glfwGetTime();
+        double elapsed = currentTime - lastUpdateTime;
+
+
+        if (elapsed >= updateInterval) {
+            cell_grid.update();
+            lastUpdateTime = currentTime;
+        }
         cell_grid.uploadTexToGPU();
 
         shader.use();

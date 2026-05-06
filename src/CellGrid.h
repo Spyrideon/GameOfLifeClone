@@ -9,9 +9,9 @@ class CellGrid {
 private:
     std::vector<uint8_t> cells;
 
-    unsigned int texture;
-    int height;
-    int width;
+    unsigned int texture{};
+    const int height;
+    const int width;
 
 public:
     CellGrid(int width, int height);
@@ -26,6 +26,7 @@ public:
     // getter + setter
     void set(const int x,const int y,const uint8_t val);
     uint8_t get(const int x,const int y);
+    uint8_t countNeighbours(int row, int col);
     void initTexture();
 };
 
