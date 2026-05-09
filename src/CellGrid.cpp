@@ -6,7 +6,7 @@ CellGrid::CellGrid(const int width,const int height)
     initTexture();
 
     std::mt19937 rng(std::random_device{}());
-    std::bernoulli_distribution dist(0.4);
+    std::bernoulli_distribution dist(0.73);
 
     for (auto& cell : cells) {
         cell = dist(rng) ? 1 : 0;
@@ -36,7 +36,7 @@ void CellGrid::update() {
     cells = new_cells;
 }
 
-void CellGrid::uploadTexToGPU() {
+void CellGrid::uploadTexToGPU() const{
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexSubImage2D(GL_TEXTURE_2D,
         0, // mipmap
@@ -47,14 +47,11 @@ void CellGrid::uploadTexToGPU() {
         cells.data());
 }
 
-// getter + setter
-void CellGrid::set(const int x,const int y,const uint8_t val) {
-    cells[x * y - 1] = val;
+void CellGrid::toggleCell(const int x, const int y) {
+    cells[y * height + x] = 1;
 }
-uint8_t CellGrid::get(const int x,const int y) {
-    return cells[x * y - 1];
-}
-uint8_t CellGrid::countNeighbours(int row, int col) {
+
+uint8_t CellGrid::countNeighbours(const int row,const int col) const{
     uint8_t count = 0;
     const bool has_top = row > 0;
     const bool has_bottom = row < height - 1;

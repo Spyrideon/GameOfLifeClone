@@ -10,11 +10,11 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 GLFWwindow* init();
 
-constexpr int WINDOW_WIDTH = 1500;
-constexpr int WINDOW_HEIGHT = 1500;
+constexpr int WINDOW_WIDTH = 1000;
+constexpr int WINDOW_HEIGHT = 1000;
 // for now grid width/height is a 10th of window width/height
-constexpr int GRID_WIDTH = 150;
-constexpr int GRID_HEIGHT = 150;
+constexpr int GRID_WIDTH = 100;
+constexpr int GRID_HEIGHT = 100;
 
 int main() {
 
@@ -54,10 +54,30 @@ int main() {
     double lastUpdateTime = glfwGetTime();
     const double updateInterval = 1.0 / 10.0;
 
+
+    bool is_paused = false;
+    bool space_was_pressed = false;
     // Render loop
     while (!glfwWindowShouldClose(window)) {
+
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
+
+        bool space_is_pressed = glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS;
+        if (space_is_pressed && !space_was_pressed)
+            is_paused = !is_paused;
+        space_was_pressed = space_is_pressed;
+
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            double x_coord, y_coord;
+            glfwGetCursorPos(window, &x_coord, &y_coord);
+
+            const int cell_x = static_cast<int>(x_coord / WINDOW_WIDTH  * GRID_WIDTH);
+            const int cell_y = static_cast<int>(y_coord / WINDOW_HEIGHT * GRID_HEIGHT);
+
+            cell_grid.toggleCell(cell_x, cell_y);
+        }
+
 
         glClearColor(0.1f, 0.15f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -66,9 +86,11 @@ int main() {
         double elapsed = currentTime - lastUpdateTime;
 
 
-        if (elapsed >= updateInterval) {
-            cell_grid.update();
-            lastUpdateTime = currentTime;
+        if (!is_paused) {
+            if (elapsed >= updateInterval) {
+                cell_grid.update();
+                lastUpdateTime = currentTime;
+            }
         }
         cell_grid.uploadTexToGPU();
 
@@ -100,7 +122,7 @@ GLFWwindow* init() {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Create window
-    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OpenGL Window", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Game of Life", nullptr, nullptr);
     if (!window) {
         std::cerr << "Failed to create GLFW window\n";
         glfwTerminate();
@@ -115,6 +137,11 @@ GLFWwindow* init() {
         glfwTerminate();
         return nullptr;
     }
+
+    int fb_width, fb_height;
+    glfwGetFramebufferSize(window, &fb_width, &fb_height);
+    std::cout << fb_width << "x" << fb_height << "\n";
+
     return window;
 }
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
