@@ -6,7 +6,7 @@ CellGrid::CellGrid(const int width,const int height)
     initTexture();
 
     std::mt19937 rng(std::random_device{}());
-    std::bernoulli_distribution dist(0.73);
+    std::bernoulli_distribution dist(0.63);
 
     for (auto& cell : cells) {
         cell = dist(rng) ? 1 : 0;
@@ -47,7 +47,12 @@ void CellGrid::uploadTexToGPU() const{
         cells.data());
 }
 
-void CellGrid::toggleCell(const int x, const int y) {
+void CellGrid::removeCell(const int x,const int y) {
+    cells[y * height + x] = 0;
+}
+
+
+void CellGrid::addCell(const int x, const int y) {
     cells[y * height + x] = 1;
 }
 

@@ -22,7 +22,8 @@ public:
 
     // upload the current cells array to the gpu
     void uploadTexToGPU() const;
-    void toggleCell(int x, int y);
+    void removeCell(int x, int y);
+    void addCell(int x, int y);
     uint8_t countNeighbours(int row, int col) const;
     void initTexture();
 };

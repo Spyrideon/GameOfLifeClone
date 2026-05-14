@@ -16,6 +16,10 @@ constexpr int WINDOW_HEIGHT = 1000;
 constexpr int GRID_WIDTH = 100;
 constexpr int GRID_HEIGHT = 100;
 
+enum class DrawMode {
+    ADD, REMOVE
+};
+
 int main() {
 
     GLFWwindow* window = init();
@@ -57,6 +61,7 @@ int main() {
 
     bool is_paused = false;
     bool space_was_pressed = false;
+    auto draw_mode = DrawMode::ADD;
     // Render loop
     while (!glfwWindowShouldClose(window)) {
 
@@ -68,14 +73,30 @@ int main() {
             is_paused = !is_paused;
         space_was_pressed = space_is_pressed;
 
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            draw_mode = DrawMode::ADD;
+        }
+        if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+            draw_mode = DrawMode::REMOVE;
+        }
+
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
             double x_coord, y_coord;
             glfwGetCursorPos(window, &x_coord, &y_coord);
+            int win_width, win_height;
+            glfwGetWindowSize(window, &win_width, &win_height);
 
-            const int cell_x = static_cast<int>(x_coord / WINDOW_WIDTH  * GRID_WIDTH);
-            const int cell_y = static_cast<int>(y_coord / WINDOW_HEIGHT * GRID_HEIGHT);
+            const bool cursor_in_window =   x_coord >= 0 && x_coord < win_width &&
+                                            y_coord >= 0 && y_coord < win_height;
+            if (cursor_in_window) {
+                const int cell_x = static_cast<int>(x_coord / win_width  * GRID_WIDTH);
+                const int cell_y = static_cast<int>(y_coord / win_height * GRID_HEIGHT);
 
-            cell_grid.toggleCell(cell_x, cell_y);
+                if   (draw_mode == DrawMode::ADD)
+                    cell_grid.addCell(cell_x, cell_y);
+                else
+                    cell_grid.removeCell(cell_x, cell_y);
+            }
         }
 
 
